@@ -1,4 +1,4 @@
-module github.com/tlowerison/go-service/ratelimiter
+module github.com/tlowerison/go-service/middleware/ratelimiter
 
 go 1.16
 
