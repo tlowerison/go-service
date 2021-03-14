@@ -7,7 +7,7 @@ import (
   "github.com/gin-gonic/gin"
   "github.com/rs/zerolog"
   "github.com/rs/zerolog/log"
-  "github.com/tlowerison/go-service/middleware"
+  go_service "github.com/tlowerison/go-service"
 )
 
 type EventAppender func(event *zerolog.Event)
@@ -26,8 +26,8 @@ func (*Middleware) Register() {}
 
 func (m *Middleware) Handler() gin.HandlerFunc {
   return func(c *gin.Context) {
-    middleware.SetStart(c)
-    start := c.GetTime(middleware.StartKey)
+    go_service.SetStart(c)
+    start := c.GetTime(go_service.StartKey)
 
     c.Next()
 

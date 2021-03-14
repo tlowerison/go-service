@@ -11,7 +11,7 @@ import (
   "github.com/go-redis/redis/v8"
   "github.com/go-redis/redis_rate/v9"
   flag "github.com/spf13/pflag"
-  "github.com/tlowerison/go-service/middleware"
+  go_service "github.com/tlowerison/go-service"
 )
 
 type Middleware struct {
@@ -53,7 +53,7 @@ func (m *Middleware) Handler() gin.HandlerFunc {
   limit := m.parseRateLimit()
 
   return func(c *gin.Context) {
-    middleware.SetStart(c)
+    go_service.SetStart(c)
   	res, err := limiter.Allow(ctx, m.RedisPrefix, limit)
   	if err != nil {
   		panic(err)
@@ -85,31 +85,31 @@ func (m *Middleware) registerFlags() {
 func (m *Middleware) parseRateLimit() redis_rate.Limit {
   var limit redis_rate.Limit
 
-  rateLimitComponents := strings.Split(m.RateLimit, "/")
-  if len(rateLimitComponents) != 2 {
+  components := strings.Split(m.RateLimit, "/")
+  if len(components) != 2 {
     panic(fmt.Errorf("Improperly formatted rate limit flag: must follow format [1-9][0-9]+/[hms]"))
   }
 
-  limitInt, err := strconv.Atoi(rateLimitComponents[0])
+  value, err := strconv.Atoi(components[0])
   if err != nil {
     panic(fmt.Errorf("Improperly formatted rate limit flag: %s", err.Error()))
   }
 
-  if limitInt < 0 {
-    panic(fmt.Errorf("Improperly formatted rate limit flag: Cannot use negative limits: %d", limitInt))
+  if value < 0 {
+    panic(fmt.Errorf("Improperly formatted rate limit flag: Cannot use negative limits: %d", value))
   }
 
-  period := rateLimitComponents[1]
+  period := components[1]
 
   switch period {
   case "h":
-    limit = redis_rate.PerHour(limitInt)
+    limit = redis_rate.PerHour(value)
     break
   case "m":
-    limit = redis_rate.PerMinute(limitInt)
+    limit = redis_rate.PerMinute(value)
     break
   case "s":
-    limit = redis_rate.PerSecond(limitInt)
+    limit = redis_rate.PerSecond(value)
     break
   default:
     panic(fmt.Errorf("Improperly formatted rate limit flag: Must provide rate period as one of the three options: {h,m,s}"))

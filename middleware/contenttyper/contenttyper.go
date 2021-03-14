@@ -7,7 +7,7 @@ import (
 
   "github.com/gin-gonic/gin"
   "github.com/spf13/pflag"
-  "github.com/tlowerison/go-service/middleware"
+  go_service "github.com/tlowerison/go-service"
 )
 
 type Middleware struct {
@@ -35,7 +35,7 @@ func (m *Middleware) Handler() gin.HandlerFunc {
     m.AddMimeType(components[0], components[1])
   }
   return func(c *gin.Context) {
-    middleware.SetStart(c)
+    go_service.SetStart(c)
     ext := path.Ext(c.Params.ByName("filepath"))
     if mimetype, ok := m.Mimetypes[ext]; ok {
       c.Writer.Header().Set("Content-Type", mimetype)
