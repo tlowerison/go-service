@@ -24,7 +24,7 @@ func Handler(timeout time.Duration, check Check) gin.HandlerFunc {
     var err error
     select {
     case err = <-waitForCheck(c, check):
-    case err = <-waitForTimeout(start.Add(timeout).Sub(time.Now())):
+    case err = <-waitForTimeout(start, timeout):
     }
 
     if err != nil {
@@ -46,11 +46,11 @@ func waitForCheck(c *gin.Context, check Check) <-chan error {
   return err
 }
 
-func waitForTimeout(timeout time.Duration) <-chan error {
+func waitForTimeout(start time.Time, timeout time.Duration) <-chan error {
   err := make(chan error)
   go func() {
     defer close(err)
-    time.Sleep(timeout)
+    time.Sleep(start.Add(timeout).Sub(time.Now()))
     err <-fmt.Errorf("Request exceeded %v.", timeout)
   }()
   return err
