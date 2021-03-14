@@ -1,4 +1,4 @@
-module github.com/tlowerison/go-service/recovery
+module github.com/tlowerison/go-service/middleware/recovery
 
 go 1.16
 

@@ -1,4 +1,4 @@
-module github.com/tlowerison/go-service/contenttyper
+module github.com/tlowerison/go-service/middleware/contenttyper
 
 go 1.16
 

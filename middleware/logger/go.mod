@@ -1,4 +1,4 @@
-module github.com/tlowerison/go-service/logger
+module github.com/tlowerison/go-service/middleware/logger
 
 go 1.16
 
