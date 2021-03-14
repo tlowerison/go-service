@@ -1,4 +1,4 @@
-module github.com/tlowerison/go-service/service/health
+module github.com/tlowerison/go-service/health
 
 go 1.16
 
