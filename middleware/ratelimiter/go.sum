@@ -74,8 +74,8 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/tlowerison/go-service/middleware v0.0.0-20210314101422-11a7269550ba h1:nSLhjCYGaN0QQhg9drR/pbFwgKAo7xnYDZ8kzk4o9Ak=
-github.com/tlowerison/go-service/middleware v0.0.0-20210314101422-11a7269550ba/go.mod h1:mK1MeXXMNP+RYRiYUrSHP5099lwCQehJR5KM3dXe5lw=
+github.com/tlowerison/go-service/middleware v0.0.0-20210314113342-b6d4ca11ac83 h1:A2QcoCGVfSBBAOAaFR6MLRITGJbuM7626gJ13Kz18dc=
+github.com/tlowerison/go-service/middleware v0.0.0-20210314113342-b6d4ca11ac83/go.mod h1:eVs2NzsribhZaM/yIfWzIPLAhK7lIg8JI5B8NV91Ids=
 github.com/ugorji/go v1.1.7 h1:/68gy2h+1mWMrwZFeD1kQialdSzAb432dtpeJ42ovdo=
 github.com/ugorji/go v1.1.7/go.mod h1:kZn38zHttfInRq0xu/PH0az30d+z6vm202qpg1oXVMw=
 github.com/ugorji/go/codec v1.1.7 h1:2SvQaVZ1ouYrrKKwoSk2pzd4A9evlKJb9oTL+OaLUSs=
