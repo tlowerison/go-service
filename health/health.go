@@ -12,33 +12,46 @@ type Error struct {
   Err string `json:"error"`
 }
 
-func Handler(timeout time.Duration, check func(c *gin.Context) error) gin.HandlerFunc {
+type Check func(c *gin.Context) error
+
+func Handler(timeout time.Duration, check Check) gin.HandlerFunc {
   return func(c *gin.Context) {
-    finished := false
     start := c.GetTime(middleware.StartKey)
     if (start == time.Time{}) {
       start = time.Now()
     }
 
-    go func() {
-      err := check(c)
-      if !finished {
-        finished = true
-        if err != nil {
-          c.AbortWithError(500, err)
-        } else {
-          c.Status(200)
-          c.Writer.Write([]byte("ok"))
-        }
-      }
-    }()
+    var err error
+    select {
+    case err = <-waitForCheck(c, check):
+    case err = <-waitForTimeout(start.Add(timeout).Sub(time.Now())):
+    }
 
-    time.Sleep(start.Add(timeout).Sub(time.Now()))
-    if !finished {
-      finished = true
-      err := fmt.Errorf("Request exceeded %v.", timeout)
+    if err != nil {
       c.Error(err)
       c.AbortWithStatusJSON(500, interface{}(Error{Err: err.Error()}))
+    } else {
+      c.Status(200)
+      c.Writer.Write([]byte("ok"))
     }
   }
+}
+
+func waitForCheck(c *gin.Context, check Check) <-chan error {
+  err := make(chan error)
+  go func() {
+    defer close(err)
+    err <-check(c)
+  }()
+  return err
+}
+
+func waitForTimeout(timeout time.Duration) <-chan error {
+  err := make(chan error)
+  go func() {
+    defer close(err)
+    time.Sleep(timeout)
+    err <-fmt.Errorf("Request exceeded %v.", timeout)
+  }()
+  return err
 }
