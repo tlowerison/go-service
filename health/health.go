@@ -12,7 +12,7 @@ type Error struct {
   Err string `json:"error"`
 }
 
-func Health(timeout time.Duration, check func(c *gin.Context) error) gin.HandlerFunc {
+func Handler(timeout time.Duration, check func(c *gin.Context) error) gin.HandlerFunc {
   return func(c *gin.Context) {
     finished := false
     start := c.GetTime(middleware.StartKey)
