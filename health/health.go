@@ -2,17 +2,20 @@ package health
 
 import (
   "fmt"
+  "net/http"
   "strconv"
   "strings"
   "time"
 
   "github.com/gin-gonic/gin"
+  "github.com/rs/zerolog/log"
   flag "github.com/spf13/pflag"
   go_service "github.com/tlowerison/go-service"
 )
 
 type Service struct {
   Check   Check
+  Port    int
   Timeout string
   timeout time.Duration
 }
@@ -30,10 +33,32 @@ func New(check Check) *Service {
 }
 
 func (s *Service) Register() {
+  flag.IntVar(&s.Port, "health-port", 2020, "Health port to listen on.")
   flag.StringVar(&s.Timeout, "health-timeout", "10-s", "Rate limit formatted as [1-9][0-9]+-[hms].")
 }
 
-func (s *Service) Handler() gin.HandlerFunc {
+func (s *Service) Serve() <-chan *http.Server {
+  channel := make(chan *http.Server)
+  go func() {
+    defer close(channel)
+
+    router := gin.New()
+    server := &http.Server{Addr: fmt.Sprintf(":%d", s.Port), Handler: router}
+
+    router.GET("/health", s.handler())
+
+  	log.Info().Msgf("Health server starting on port %d.", s.Port)
+
+    channel <- server
+
+    if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+  		log.Fatal().Err(err).Msg("Starting health server failed.")
+  	}
+  }()
+  return channel
+}
+
+func (s *Service) handler() gin.HandlerFunc {
   s.parseTimeout()
   return func(c *gin.Context) {
     start := c.GetTime(go_service.StartKey)

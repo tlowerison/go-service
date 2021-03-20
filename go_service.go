@@ -1,35 +1,65 @@
 package go_service
 
 import (
+  "net/http"
   "time"
 
   "github.com/gin-gonic/gin"
 )
 
-type Service interface {
+type Registerable interface {
   Register()
-  Handler() gin.HandlerFunc
 }
 
-type Collection []Service
+type Registerables []Registerable
 
-const StartKey = "start"
+func (registerables Registerables) Register() {
+  for _, registerable := range registerables {
+    if registerable != nil {
+      registerable.Register()
+    }
+  }
+}
 
-func (collection Collection) Register() {
-  for _, service := range collection {
+type Service interface {
+  Serve() <-chan *http.Server
+  Registerable
+}
+
+type Services []Service
+
+func (services Services) Register() {
+  for _, service := range services {
     if service != nil {
       service.Register()
     }
   }
 }
 
-func (collection Collection) Apply(r *gin.Engine) {
-  for _, service := range collection {
-    if service != nil {
-      r.Use(service.Handler())
+type Middleware interface {
+  Handler() gin.HandlerFunc
+  Registerable
+}
+
+type Middlewares []Middleware
+
+func (middlewares Middlewares) Register() {
+  for _, middleware := range middlewares {
+    if middleware != nil {
+      middleware.Register()
     }
   }
 }
+
+func (middlewares Middlewares) Apply(router *gin.Engine) {
+  for _, middleware := range middlewares {
+    if middleware != nil {
+      router.Use(middleware.Handler())
+    }
+  }
+}
+
+const StartKey = "start"
 
 func SetStart(c *gin.Context) {
   _, exists := c.Get(StartKey)
